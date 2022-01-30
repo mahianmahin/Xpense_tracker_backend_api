@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from .serializers import *
+
 
 # signup view
 @api_view(['POST'])
@@ -31,6 +33,26 @@ def register_app(request):
     except Exception as error:
         return Response({
             'status':status.HTTP_400_BAD_REQUEST,
+            'msg': str(error)
+        })
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def login_app(request):
+    try:
+        username = request.data['username']
+        user_ins = User.objects.get(username=username)
+        serializer = UserSerializer(user_ins)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'data': serializer.data
+        })
+
+    except Exception as error:
+        return Response({
+            'status': status.HTTP_400_BAD_REQUEST,
             'msg': str(error)
         })
 
